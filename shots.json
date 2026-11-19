@@ -1,5 +1,37 @@
 [
-  { "file": "1-checklist.jpg", "path": "/", "viewport": { "width": 1280, "height": 800 } },
-  { "file": "2-silver.jpg", "path": "/", "grade": "silver", "viewport": { "width": 1280, "height": 800 } },
-  { "file": "3-bronze.jpg", "path": "/", "grade": "bronze", "scroll": 1400, "viewport": { "width": 1280, "height": 800 } }
+  {
+    "file": "1-platinum-command.jpg",
+    "viewport": { "width": 1280, "height": 900 },
+    "earned": [2, 15, 21],
+    "spoilers": false,
+    "kind": "activities",
+    "selected": 17,
+    "listAnchor": 15
+  },
+  {
+    "file": "2-platinum-roadmap.jpg",
+    "viewport": { "width": 1280, "height": 900 },
+    "earned": [2, 3, 4, 5],
+    "spoilers": false,
+    "view": "roadmap",
+    "roadmapStage": 2
+  },
+  {
+    "file": "3-missable-watch.jpg",
+    "viewport": { "width": 1280, "height": 900 },
+    "earned": [2, 3, 4, 8, 9],
+    "spoilers": false,
+    "kind": "missable",
+    "selected": 34,
+    "listAnchor": 33
+  },
+  {
+    "file": "4-spoiler-shield.jpg",
+    "viewport": { "width": 1280, "height": 900 },
+    "earned": [2, 3],
+    "spoilers": true,
+    "kind": "story",
+    "selected": 4,
+    "listAnchor": 1
+  }
 ]
