@@ -41,7 +41,7 @@ const notes = {
   14: ['After story · Progress > Stats > 100% Completion', 'Finish the story, then open Progress > Stats > 100% Completion. Earlier work is retained. The checklist is selective, not literally everything: major targets include 100 optional tasks, all 39 gang operations, all 8 vaults, 42 range golds, all 42 drone trials, 300 stunts, 70/80 challenges and 15 Target Decks. Also scan 200 base-model vehicles and study 100 animals. Nothing on this checklist is missable.', 'The in-game 100% display is the only completion proof; this app’s 55 ticks are a different ledger.', 'PowerPyx · 100% completion checklist', GUIDES.completion],
   15: ['Any 250 of 397 stunts · Stage: activity mastery', 'Complete any 250 unique stunts across four families: 130 Stunt Jumps, 202 Under the Bridges, 40 Knife Flights and 25 Base Jumps. Under-the-bridge runs are the quickest batch in PowerPyx’s route. Check Progress > Activities > Stunts by region and use named map entries to avoid repeats. A Long Road asks for 300, so keep sweeping after this unlock.', '250/397 stunts complete; chase 300 for 100% Completion.', 'PowerPyx · Stunt locations', GUIDES.stunts],
   16: ['9 activity types · one recorded attempt each', 'Do one of each of the nine tracked types: fishing, hunting, golf, shooting range, pool, basketball, a video game, a race win and a stunt. Open Progress > Activities to find the missing category. Repeated events in one sport cannot substitute for a category you have never tried.', 'All 9 activity categories show participation; the trophy tracker is the quickest audit.', 'PowerPyx · Platinum roadmap', ROADMAP],
-  17: ['42 gold medals · 12 challenges at two ranges', 'Earn gold on all 42 Shooting Range challenges at Griffin Shooting Range and Rodgers Ranch. Buy the $5 waiver from each range clerk, then work challenge by challenge and retry around the exact gold threshold. Recording 42 completions with mixed medals is not enough. This full set is also required for A Long Road.', '42/42 challenges display gold under Progress > Activities > Shooting Ranges.', 'PowerPyx · Shooting Range gold guide', GUIDES.range],
+  17: ['42 gold medals · Griffin Shooting Range + Rodgers Ranch', 'Earn gold on all 42 challenges at Griffin Shooting Range and Rodgers Ranch. Buy each range clerk’s $5 waiver, clear challenges in order and retry at the exact gold threshold. Mixed medals do not count; all 42 golds are also required for A Long Road.', '42/42 challenges display gold under Progress > Activities > Shooting Ranges.', 'PowerPyx · Shooting Range gold guide', GUIDES.range],
   18: ['14 drone hubs · 42 trials for full completion', 'Win at every one of the 14 Top Fun Drone Race locations. For the completion sweep, go further and clear all 42 trials: beat par on the first two courses at each hub to open the third, then finish that third course. Filter Map > Activities > Top Fun Drones and reconcile the hub list instead of farming one easy course.', 'A win at 14/14 hubs; separately, 42/42 trials for A Long Road.', 'PowerPyx · Drone race locations', GUIDES.drones],
   19: ['20 different races · 30 for 100% Completion', 'Win 20 unique races and keep a zero for every duplicate victory. There are 40 unique events, and A Long Road later asks for wins in 30, so continue using Progress > Activities > Racing to clear new names. Race Challenges and Top Fun Drone Races have their own medal or location ledgers.', '20 unique race wins recorded; continue to 30/40 for 100% Completion.', 'PowerPyx · Unique race locations', GUIDES.races],
   20: ['After Chapter 1: Feng Shui · west of Key Lento', 'After Feng Shui introduces Cal, watch for his text and a purple fishing marker west of Key Lento. Take that challenge and beat Cal’s result. Ordinary catches or a draw do not settle the named head-to-head requirement; retry the marked challenge until the result says you won.', 'Cal’s marked fishing challenge ends with Cal beaten.', 'PowerPyx · Platinum roadmap', ROADMAP],
@@ -122,12 +122,12 @@ for (const trophy of document.trophies) {
     {
       label: 'PSNProfiles · GTA VI official PS5 list',
       url: PSN,
-      use: 'Cross-check for the exact trophy name, grade and official unlock description reproduced above.',
+      use: 'Authority for the official name, grade and unlock sentence; the practical steps beside it are original to this manual.',
     },
     {
       label: note[3],
       url: note[4],
-      use: 'Launch walkthrough used to verify the placement, counts, locations and prerequisites in this independently worded field note.',
+      use: 'Source for the mission placement, map locations, counts and prerequisites in this field note; prose and route order are original.',
     },
   ];
 }

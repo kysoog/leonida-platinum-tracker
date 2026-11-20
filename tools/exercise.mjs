@@ -32,6 +32,7 @@ try {
   }
   evidence.afterTicks = {
     progressText: await page.evaluate("document.querySelector('#progressValue').textContent"),
+    percentText: await page.evaluate("document.querySelector('#progressPercent').textContent"),
     localStorage: await storage(),
   };
 
@@ -87,7 +88,8 @@ try {
   evidence.missable = await page.evaluate(`({
     rows: document.querySelectorAll('.trophy-row').length,
     window: document.querySelector('.missable-window strong').textContent,
-    sources: Array.from(document.querySelectorAll('.source-entry a')).map((a) => ({ label: a.textContent, href: a.href }))
+    sources: Array.from(document.querySelectorAll('.source-entry a')).map((a) => ({ label: a.textContent, href: a.href })),
+    sourcePanel: (() => { const panel = document.querySelector('.guide-sources'); if (!panel) return null; const rect = panel.getBoundingClientRect(); return { top: Math.round(rect.top), bottom: Math.round(rect.bottom), visible: rect.top >= 0 && rect.bottom <= innerHeight }; })(),
   })`);
   await page.evaluate("document.querySelector('[data-view-target=\"roadmap\"]').click()");
   await page.waitForFlag();
@@ -105,11 +107,12 @@ try {
   console.log(JSON.stringify(evidence, null, 2));
 
   const persisted = evidence.afterReload.localStorage.earned.length === 3;
+  const percentWorks = evidence.afterTicks.percentText === '5%';
   const imported = evidence.afterImport.localStorage.earned.length === 3;
   const spoilerWorks = evidence.spoilersOn.hiddenStoryName.includes('hidden') && evidence.spoilersOff.revealedStoryName === 'T**s Ass Drug Money';
-  const missableWorks = evidence.missable.rows === 1 && evidence.missable.window.includes('Chapter 1') && evidence.missable.sources.length === 2;
+  const missableWorks = evidence.missable.rows === 1 && evidence.missable.window.includes('Chapter 1') && evidence.missable.sources.length === 2 && evidence.missable.sourcePanel.visible;
   const routeWorks = evidence.roadmap.stages === 6 && evidence.roadmap.activeStage === '5' && evidence.roadmap.rows === 11;
-  if (![persisted, imported, spoilerWorks, missableWorks, routeWorks].every(Boolean) || page.exceptions.length || page.errorEvents.length) {
+  if (![persisted, percentWorks, imported, spoilerWorks, missableWorks, routeWorks].every(Boolean) || page.exceptions.length || page.errorEvents.length) {
     throw new Error('Tracker exercise failed an assertion.');
   }
   console.log('EXERCISE PASS: persistence, reload, export, import, spoilers, citation links, missable window and six-stage route.');

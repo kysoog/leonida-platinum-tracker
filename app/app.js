@@ -14,7 +14,7 @@ const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 const elements = {
   guideView: $('#guideView'), roadmapView: $('#roadmapView'), list: $('#trophyList'), guide: $('#trophyGuide'),
   resultCount: $('#resultCount'), browserTitle: $('#browserTitle'), empty: $('#emptyState'), toast: $('#toast'),
-  spoiler: $('#spoilerToggle'), progressValue: $('#progressValue'), progressFill: $('#progressFill'), storage: $('#storageStatus'),
+  spoiler: $('#spoilerToggle'), progressValue: $('#progressValue'), progressPercent: $('#progressPercent'), progressFill: $('#progressFill'), storage: $('#storageStatus'),
 };
 
 let documentData;
@@ -55,9 +55,11 @@ function matches(trophy) {
 }
 
 function renderProgress() {
-  const count = store.count();
-  elements.progressValue.textContent = `${count} / ${trophies.length}`;
-  elements.progressFill.style.width = `${count / trophies.length * 100}%`;
+  const progress = store.summary();
+  elements.progressValue.textContent = `${progress.earned} / ${progress.total}`;
+  elements.progressPercent.textContent = `${progress.percent}%`;
+  elements.progressFill.style.width = `${progress.percent}%`;
+  elements.progressValue.parentElement.setAttribute('aria-label', `${progress.earned} of ${progress.total} trophies earned; ${progress.remaining} remain`);
   elements.storage.textContent = store.status();
   elements.storage.style.color = store.isPersistent() ? '' : '#934821';
 }

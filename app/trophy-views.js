@@ -11,6 +11,7 @@ export async function loadTrophyDocument() {
   const names = new Set();
   for (const [position, trophy] of document.trophies.entries()) {
     if (!trophy.name?.trim() || !trophy.description?.trim() || !trophy.guide?.trim()) throw new Error(`Incomplete trophy at position ${position + 1}.`);
+    if (trophy.guide.length < 180 || !trophy.unlockContext?.trim() || !trophy.progressCheck?.trim()) throw new Error(`Guide needs concrete placement, steps and an earned check at ${trophy.name}.`);
     if (!levels.has(trophy.grade) || names.has(trophy.name)) throw new Error(`Invalid grade or duplicate name at ${trophy.name}.`);
     if (!Array.isArray(trophy.sources) || trophy.sources.length === 0) throw new Error(`No cited source for ${trophy.name}.`);
     for (const source of trophy.sources) {
@@ -86,7 +87,7 @@ export function renderTrophyGuide(container, trophy, store) {
   heading.append(close);
 
   const meta = element('p', 'guide-title-grade');
-  meta.append(element('i', `grade-token ${trophy.grade}`), document.createTextNode(`${GRADE_TITLES[trophy.grade]} · official ${trophy.id}/55`));
+  meta.append(element('i', `grade-token ${trophy.grade}`), document.createTextNode(`${store.has(trophy.name) ? 'EARNED' : 'NOT EARNED'} · ${GRADE_TITLES[trophy.grade]} · official ${trophy.id}/55`));
   const title = element('h2', '', trophy.name);
   title.id = 'guideTitle';
   const context = element('p', 'guide-context', trophy.unlockContext);
@@ -101,7 +102,7 @@ export function renderTrophyGuide(container, trophy, store) {
     window.append(
       element('span', '', 'POTENTIAL MISSABLE / CONSERVATIVE ROUTE'),
       element('strong', '', trophy.missableWindow),
-      element('small', '', 'Source verification is still pending whether the Chapter 1 session is mandatory. Do it anyway; it costs one manual save and removes the risk.'),
+      element('small', '', 'Jason’s kitchen → follow Lucia to balcony → Accept before Chapter 2. Keep a chapter save; trophy necessity is unconfirmed.'),
     );
     scroll.append(window);
   }
@@ -111,6 +112,7 @@ export function renderTrophyGuide(container, trophy, store) {
   const copy = element('div', 'guide-copy');
   for (const paragraph of trophy.guide.split(/\n\n+/)) copy.append(element('p', '', paragraph));
   authored.append(copy);
+  authored.append(element('p', 'guide-basis', `Research beside these steps: ${trophy.sources.map((source) => source.label).join(' + ')}. Named links are pinned below.`));
   scroll.append(authored);
 
   const route = element('div', 'route-reference');
@@ -124,7 +126,7 @@ export function renderTrophyGuide(container, trophy, store) {
   scroll.append(note);
 
   const sources = element('section', 'guide-sources');
-  sources.append(element('h3', '', 'SOURCES / LINKS OPEN ONLY WHEN SELECTED'));
+  sources.append(element('h3', '', 'RESEARCH SOURCES / LINKS OPEN ONLY WHEN SELECTED'));
   for (const source of trophy.sources) {
     const entry = element('div', 'source-entry');
     const link = element('a', '', source.label);
@@ -134,7 +136,7 @@ export function renderTrophyGuide(container, trophy, store) {
     entry.append(link, element('p', '', source.use));
     sources.append(entry);
   }
-  scroll.append(sources);
-  container.replaceChildren(scroll);
+  // Keep bibliography visible while long route copy scrolls independently.
+  container.replaceChildren(scroll, sources);
   container.setAttribute('aria-labelledby', 'guideTitle');
 }

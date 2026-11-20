@@ -27,6 +27,12 @@ export function createProgressStore(officialNames) {
     return officialNames.filter((name) => state.earned.has(name));
   }
 
+  function summary() {
+    const earned = state.earned.size;
+    const total = officialNames.length;
+    return { earned, total, remaining: total - earned, percent: total ? Math.round(earned / total * 100) : 0 };
+  }
+
   function persist() {
     try {
       localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify({
@@ -46,6 +52,7 @@ export function createProgressStore(officialNames) {
   return {
     has: (name) => state.earned.has(name),
     count: () => state.earned.size,
+    summary,
     hideStorySpoilers: () => state.hideStorySpoilers,
     isPersistent: () => writable,
     status: () => writable ? 'Saved in this browser' : `Session only${lastError ? ': storage unavailable' : ''}`,

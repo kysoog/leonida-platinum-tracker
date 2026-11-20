@@ -1,5 +1,5 @@
 // Dependency-free local server. There are no remote assets or proxy routes.
-import { createReadStream, statSync } from 'node:fs';
+import { createReadStream, lstatSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -43,7 +43,7 @@ createServer((request, response) => {
   }
   try {
     const stats = statSync(file);
-    if (!stats.isFile()) throw new Error('Not a file');
+    if (!lstatSync(file).isFile() || !stats.isFile()) throw new Error('Not a regular file');
     response.writeHead(200, { ...headers, 'content-type': mediaTypes[extname(file)] ?? 'application/octet-stream', 'content-length': stats.size });
     if (request.method === 'HEAD') response.end();
     else createReadStream(file).pipe(response);

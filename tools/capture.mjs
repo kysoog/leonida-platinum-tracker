@@ -1,4 +1,5 @@
-import { mkdirSync, readFileSync, rmSync, writeFileSync, statSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { startBrowserHarness } from './browser-harness.mjs';
 
@@ -6,6 +7,9 @@ const root = resolve('.');
 const shotDirectory = resolve('screenshots');
 const shots = JSON.parse(readFileSync('shots.json', 'utf8'));
 const trophyDocument = JSON.parse(readFileSync('app/data/trophies.json', 'utf8'));
+const captureRecord = [];
+const recordDirectory = resolve(process.env.TG2_SCRATCH_DIR ?? '/root/makefun/tg2-scratch/round3');
+mkdirSync(recordDirectory, { recursive: true });
 rmSync(shotDirectory, { recursive: true, force: true });
 mkdirSync(shotDirectory, { recursive: true });
 const browser = await startBrowserHarness(resolve(root, 'app'));
@@ -66,15 +70,20 @@ try {
     if (!/^[A-Za-z0-9._-]{1,128}$/.test(shot.file) || !/\.(?:png|jpe?g)$/i.test(shot.file)) throw new Error(`Invalid capture path: ${shot.file}`);
     if (shot.viewport.width !== 1280 || shot.viewport.height !== 800) throw new Error('Captures must be 1280x800 to match the judge cover frame.');
     const capture = await page.send('Page.captureScreenshot', {
-      format: 'jpeg', quality: 90, fromSurface: true, captureBeyondViewport: false,
+      format: 'jpeg', quality: 88, fromSurface: true, captureBeyondViewport: false,
     });
     const output = resolve(shotDirectory, shot.file);
     writeFileSync(output, Buffer.from(capture.data, 'base64'));
     console.log(`LAYOUT ${shot.file}: ${JSON.stringify(geometry)}`);
-    console.log(`${shot.file}: ${statSync(output).size} bytes; CDP exceptions ${JSON.stringify(page.exceptions)}; browser errors ${JSON.stringify(page.errorEvents)}`);
+    const bytes = readFileSync(output);
+    captureRecord.push({ file: shot.file, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'), geometry });
+    console.log(`${shot.file}: ${bytes.length} bytes; CDP exceptions ${JSON.stringify(page.exceptions)}; browser errors ${JSON.stringify(page.errorEvents)}`);
     if (page.exceptions.length) throw new Error(`Page exception while capturing ${shot.file}.`);
     await page.close();
   }
+  const recordPath = resolve(recordDirectory, 'capture-record.json');
+  writeFileSync(recordPath, `${JSON.stringify({ viewport: [1280, 800], captures: captureRecord }, null, 2)}\n`);
+  console.log(`CAPTURE RECORD ${recordPath}: ${captureRecord.length} screenshots hashed and measured.`);
 } finally {
   await browser.close();
 }

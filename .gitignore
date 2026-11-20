@@ -3,5 +3,8 @@ node_modules/
 artifacts/
 coverage/
 *.log
+*.tmp
 .DS_Store
+.eslintcache
+/capture-record.json
 tools/browser-profile-*/

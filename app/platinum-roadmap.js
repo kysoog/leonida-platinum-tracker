@@ -1,4 +1,4 @@
-import { isSpoilerProtected } from './trophy-views.js';
+import { GRADE_TITLES, isSpoilerProtected } from './trophy-views.js';
 
 export const ROADMAP_STAGES = [
   {
@@ -56,6 +56,7 @@ export function renderRoadmap(container, trophies, store, selectedStage) {
     const button = node('button', `route-stage${stage.id === activeStage.id ? ' is-active' : ''}`);
     button.type = 'button';
     button.dataset.roadmapStage = String(stage.id);
+    button.title = stage.note;
     button.append(node('span', 'stage-number', String(stage.id).padStart(2, '0')));
     const copy = node('span');
     copy.append(node('strong', '', stage.short), node('small', '', stage.note));
@@ -91,7 +92,7 @@ export function renderRoadmap(container, trophies, store, selectedStage) {
     copy.append(node('small', '', concealed ? 'Spoiler-protected story milestone; automatic in its chapter.' : trophy.unlockContext));
     const flags = node('span', 'stage-flags');
     if (trophy.missable) flags.append(node('b', 'missable-badge', 'CH.1 WINDOW'));
-    flags.append(node('i', `grade-token ${trophy.grade}`));
+    flags.append(node('b', 'stage-grade', GRADE_TITLES[trophy.grade]), node('i', `grade-token ${trophy.grade}`));
     open.append(copy, flags);
     list.append(open);
   }

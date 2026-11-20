@@ -92,6 +92,7 @@ export async function startBrowserHarness(appRoot) {
   const chromium = spawn('/usr/bin/chromium', [
     '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--hide-scrollbars',
     '--disable-background-networking', '--disable-component-update', '--disable-sync',
+    '--force-color-profile=srgb', '--lang=en-US', '--disable-features=PaintHolding',
     `--remote-debugging-port=${debugPort}`, `--user-data-dir=${profile}`, '--no-first-run', 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'pipe'] });
   let diagnostic = '';
@@ -121,6 +122,8 @@ export async function startBrowserHarness(appRoot) {
     await connection.send('Page.enable', {}, sessionId);
     await connection.send('Runtime.enable', {}, sessionId);
     await connection.send('Log.enable', {}, sessionId);
+    await connection.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] }, sessionId);
+    await connection.send('Emulation.setLocaleOverride', { locale: 'en-US' }, sessionId);
 
     async function evaluate(expression) {
       const result = await connection.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }, sessionId);

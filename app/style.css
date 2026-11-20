@@ -408,3 +408,85 @@ button.is-active { border-color: var(--ink); background: var(--ink); color: #fff
   .app-footer { min-height: 52px; padding: 10px 12px; flex-wrap: wrap; }
   .app-footer > span:last-child { display: none; }
 }
+
+/* Round 3 capture typography: primary copy stays legible when fitted to 768x480. */
+@media (min-width: 1000px) {
+  body { font-size: 24px; }
+  .catalogue-shell { grid-template-rows: 92px 100px 52px minmax(0, 1fr) 32px; }
+  .brandbar { gap: 16px; }
+  .brand-mark { width: 58px; height: 58px; font-size: 23px; }
+  .brand-copy p { font-size: 16px; margin-bottom: 5px; }
+  .brand-copy h1 { font-size: 32px; }
+  .brand-copy h1 span { font-size: 24px; }
+  .progress-chip { width: 230px; grid-template-columns: 1fr auto auto; }
+  .progress-chip > span { font-size: 14px; }
+  .progress-chip strong, .progress-chip > b { font-size: 24px; color: var(--acid); }
+  .makefun-link { width: 210px; }
+  .makefun-link strong { font-size: 25px; }
+  .makefun-link > span, .makefun-link small { font-size: 14px; }
+  .route-ribbon { grid-template-columns: 205px repeat(3, minmax(0, 1fr)) 325px; }
+  .route-ribbon > * { padding: 10px 13px; }
+  .route-ribbon-title > span { font-size: 15px; margin-bottom: 4px; }
+  .route-ribbon-title strong { font-size: 20px; }
+  .macro-step { gap: 7px; }
+  .macro-step > b { font-size: 29px; }
+  .macro-step strong { font-size: 19px; }
+  .macro-step small { font-size: 16px; }
+  .route-alert span { font-size: 14px; }
+  .route-alert strong { font-size: 20px; }
+  .route-alert small { font-size: 16px; }
+  .view-tab { font-size: 20px; }
+  .view-tab span, .spoiler-toggle, .tool-button { font-size: 16px; }
+  .guide-view { grid-template-columns: 445px minmax(0, 1fr); gap: 12px; padding-top: 12px; }
+  .browser-rail { display: none; }
+  .browser-header { padding: 10px 14px 6px; }
+  .browser-header h2 { font-size: 28px; }
+  .browser-header .section-label { font-size: 15px; }
+  #resultCount { font-size: 16px; }
+  .search-field input { height: 40px; font-size: 19px; }
+  .kind-tabs { gap: 3px; }
+  .kind-tabs button { font-size: 14px; min-height: 35px; padding: 0 3px; }
+  .kind-tabs button span { font-size: 12px; }
+  .list-heading { font-size: 13px; }
+  .trophy-row { content-visibility: auto; contain-intrinsic-size: auto 150px; }
+  .trophy-open { min-height: 148px; padding: 12px; }
+  .grade-line { font-size: 15px; }
+  .trophy-name { font-size: 27px; line-height: 1.12; }
+  .trophy-description { font-size: 21px; line-height: 1.25; }
+  .context-line { font-size: 16px; }
+  .guide-scroll { padding: 15px 20px; }
+  .guide-heading h2 { font-size: 32px; }
+  .guide-title-grade { font-size: 16px; }
+  .guide-context { font-size: 18px; }
+  .official-condition { margin-top: 11px; }
+  .official-condition > span { font-size: 14px; }
+  .official-condition p, .guide-copy p { font-size: 21px; line-height: 1.35; }
+  .original-guide h3, .guide-sources h3 { font-size: 15px; }
+  .guide-basis { margin: 12px 0 0; padding: 9px 11px; background: var(--teal-pale); font-size: 18px; line-height: 1.3; }
+  .missable-window strong { font-size: 21px; }
+  .missable-window small, .missable-window > span { font-size: 17px; line-height: 1.3; }
+  .route-reference strong, .progress-note strong { font-size: 19px; }
+  .route-reference small, .progress-note span { font-size: 15px; }
+  .guide-sources { flex: 0 0 auto; max-height: none; overflow: visible; margin: 0; padding: 9px 20px 10px; border-top: 3px solid var(--ink); background: #fff; }
+  .source-entry > a { font-size: 20px; }
+  .source-entry p { display: none; }
+  .source-entry + .source-entry { margin-top: 7px; }
+  .roadmap-summary > div > span { font-size: 14px; }
+  .roadmap-summary > p { font-size: 18px; }
+  .timeline-title span, .timeline-title strong { font-size: 16px; }
+  .route-stage { min-height: 42px; padding: 5px 8px; }
+  .route-stage strong { font-size: 19px; }
+  .route-stage small { display: none; }
+  .route-save-note > span { font-size: 15px; }
+  .route-save-note strong { font-size: 19px; }
+  .route-save-note p { font-size: 16px; }
+  .stage-detail-header h2 { font-size: 32px; }
+  .stage-description { font-size: 21px; }
+  .stage-trophy { min-height: 67px; }
+  .stage-trophy strong { font-size: 22px; }
+  .stage-trophy small { font-size: 17px; }
+  .stage-grade { font-size: 15px; color: var(--muted); }
+  .app-footer { font-size: 14px; }
+  .app-footer > span:last-child { display: none; }
+}
+

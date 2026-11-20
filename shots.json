@@ -28,10 +28,10 @@
   {
     "file": "4-spoiler-shield.jpg",
     "viewport": { "width": 1280, "height": 800 },
-    "earned": [2, 3],
-    "spoilers": true,
-    "kind": "story",
-    "selected": 4,
-    "listAnchor": 8
+    "earned": [2, 28],
+    "spoilers": false,
+    "kind": "missable",
+    "selected": 28,
+    "listAnchor": 28
   }
 ]

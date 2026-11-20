@@ -20,7 +20,8 @@ Open http://127.0.0.1:8080. There are no package installs, web fonts, remote ass
 - Corrects the old 15-item missable watch to the single currently evidenced risk: **Positive Mental Attitude**, Chapter 1, after **Down to Earth**, before Chapter 2. Its guide records the **1 of 18 meditations** qualification and the fact that necessity is still unconfirmed.
 - Gives each automatic story mission its exact chapter/placement; maps character prerequisites; and adds concrete counts and locations from the 100% checklist (42 range golds, 14 drone hubs, 397 stunts, 39 gang operations and more).
 - Aligns the roadmap to **60–80h story → ≈100h 100% checklist → ≈10h strangers/cleanup**, then splits the work into six operational stages with trophy-level earning order.
-- Uses an original editorial design with larger type, explicit color-and-text grade labels, strong source blocks, a visible make.fun bounty link and captures composed at exactly 1280×800.
+- Uses an original editorial design with explicit color-and-text grade labels, an enlarged cover type scale, pinned source links, a visible make.fun bounty link and deterministic 1280×800 captures. Off-screen rows use `content-visibility` to reduce first-load rendering work.
+- Round 3 keeps the official wording hash-pinned to the starter, clarifies what each citation supports beside every guide, exposes earned/remaining/percent progress and records screenshot geometry plus SHA-256 hashes in scratch.
 
 The app works with the whole trophy list at once, not a truncated brochure: filters, search, source links, spoiler protection, roadmap selection and completion ticks all use the same live data.
 

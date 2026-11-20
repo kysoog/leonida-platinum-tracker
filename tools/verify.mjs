@@ -49,6 +49,8 @@ check(missingGuides.length === 0, `Official trophies missing / blank guides: ${m
 check(changedOfficialText.length === 0, `Official descriptions or grades changed: ${changedOfficialText.join(', ')}`);
 check(current.trophies.every((trophy) => Array.isArray(trophy.sources) && trophy.sources.length > 0 && trophy.sources.every((source) => source.label?.trim() && source.use?.trim() && /^https:\/\//.test(source.url ?? ''))), 'A trophy guide is missing its named linked sources.');
 check(current.trophies.every((trophy) => trophy.guide.length >= 180 && trophy.guide.trim() !== trophy.description.trim()), 'A field guide is missing or too superficial.');
+// Hash-pinned authoring gate: every note must name its research and link it locally in JSON.
+check(current.trophies.every((trophy) => trophy.sources.some((source) => /PowerPyx/.test(source.label)) && trophy.sources.some((source) => /PSNProfiles/.test(source.label))), 'Every guide must name its specialist guide and official-list source.');
 const missables = current.trophies.filter((trophy) => trophy.missable);
 check(missables.length === 1 && missables[0].id === 28, 'The cited roadmap has exactly one potential missable: Positive Mental Attitude.');
 check(missables[0]?.missableWindow === 'Chapter 1 · after Down to Earth · before Chapter 2 · 1 of 18 meditations', 'The Chapter 1 missable window or 1-of-18 meditation detail is missing.');
@@ -169,6 +171,7 @@ for (const name of shots) {
   if (dimensions) {
     check(Math.max(dimensions.width, dimensions.height) <= 1280, `${name} long side exceeds 1280.`);
     check(Math.min(dimensions.width, dimensions.height) >= 480, `${name} short side is under 480.`);
+    check(dimensions.width === 1280 && dimensions.height === 800, `${name} must use the deterministic 1280x800 capture frame.`);
     console.log(`PASS screenshot: ${name} ${format} ${bytes.length} bytes ${dimensions.width}x${dimensions.height}`);
   }
 }
