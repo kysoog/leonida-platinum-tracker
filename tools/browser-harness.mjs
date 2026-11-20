@@ -10,6 +10,10 @@ function serveApplication(root, port) {
     let pathname;
     try { pathname = decodeURIComponent(new URL(request.url ?? '/', 'local://guide').pathname); }
     catch { response.writeHead(400).end(); return; }
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      response.writeHead(405, { allow: 'GET, HEAD' }).end();
+      return;
+    }
     if (pathname.endsWith('/')) pathname += 'index.html';
     const file = resolve(root, `.${pathname}`);
     if (file !== root && !file.startsWith(`${root}${sep}`)) { response.writeHead(403).end(); return; }
@@ -83,10 +87,11 @@ async function waitForDebugPort(port) {
 export async function startBrowserHarness(appRoot) {
   const port = 41733;
   const debugPort = 9233;
-  const profile = mkdtempSync(resolve('tools/browser-profile-'));
+  const profile = mkdtempSync(resolve(process.env.TG2_SCRATCH_DIR ?? '/root/makefun/tg2-scratch', 'browser-profile-'));
   const server = await serveApplication(appRoot, port);
   const chromium = spawn('/usr/bin/chromium', [
     '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--hide-scrollbars',
+    '--disable-background-networking', '--disable-component-update', '--disable-sync',
     `--remote-debugging-port=${debugPort}`, `--user-data-dir=${profile}`, '--no-first-run', 'about:blank',
   ], { stdio: ['ignore', 'ignore', 'pipe'] });
   let diagnostic = '';
@@ -126,10 +131,14 @@ export async function startBrowserHarness(appRoot) {
     async function waitForFlag() {
       const deadline = Date.now() + 12000;
       while (Date.now() < deadline) {
-        if (await evaluate('window.__shotReady === true')) return;
+        const populated = await evaluate(`document.readyState === 'complete' && (document.querySelector('.trophy-row') !== null || document.querySelector('#loadError:not([hidden])') !== null) && (document.querySelector('.view-tab.is-active')?.dataset.viewTarget !== 'roadmap' || document.querySelector('#roadmapRoute .stage-detail') !== null)`);
+        if (populated) {
+          await evaluate('new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))');
+          return;
+        }
         await new Promise((resolveWait) => setTimeout(resolveWait, 40));
       }
-      throw new Error(`window.__shotReady did not become true. Exceptions: ${JSON.stringify(exceptions)}`);
+      throw new Error(`Trophy UI did not populate. Exceptions: ${JSON.stringify(exceptions)}. Load error: ${await evaluate("document.querySelector('#loadError')?.textContent ?? ''")}`);
     }
 
     return {
@@ -162,10 +171,14 @@ export async function startBrowserHarness(appRoot) {
       const exited = new Promise((resolveExit) => chromium.once('exit', resolveExit));
       connection.send('Browser.close').catch(() => chromium.kill('SIGTERM'));
       await Promise.race([exited, new Promise((resolveWait) => setTimeout(resolveWait, 2500))]);
-      if (chromium.exitCode === null) chromium.kill('SIGTERM');
+      if (chromium.exitCode === null) {
+        chromium.kill('SIGKILL');
+        await Promise.race([exited, new Promise((resolveWait) => setTimeout(resolveWait, 1500))]);
+      }
       connection.close();
       await new Promise((resolveClose) => server.close(resolveClose));
-      rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      await new Promise((resolveWait) => setTimeout(resolveWait, 120));
+      rmSync(profile, { recursive: true, force: true, maxRetries: 30, retryDelay: 100 });
     },
   };
 }

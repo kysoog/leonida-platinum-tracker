@@ -1,7 +1,7 @@
 [
   {
     "file": "1-platinum-command.jpg",
-    "viewport": { "width": 1280, "height": 900 },
+    "viewport": { "width": 1280, "height": 800 },
     "earned": [2, 15, 21],
     "spoilers": false,
     "kind": "activities",
@@ -10,28 +10,28 @@
   },
   {
     "file": "2-platinum-roadmap.jpg",
-    "viewport": { "width": 1280, "height": 900 },
+    "viewport": { "width": 1280, "height": 800 },
     "earned": [2, 3, 4, 5],
     "spoilers": false,
     "view": "roadmap",
-    "roadmapStage": 2
+    "roadmapStage": 4
   },
   {
     "file": "3-missable-watch.jpg",
-    "viewport": { "width": 1280, "height": 900 },
-    "earned": [2, 3, 4, 8, 9],
+    "viewport": { "width": 1280, "height": 800 },
+    "earned": [2],
     "spoilers": false,
     "kind": "missable",
-    "selected": 34,
-    "listAnchor": 33
+    "selected": 28,
+    "listAnchor": 28
   },
   {
     "file": "4-spoiler-shield.jpg",
-    "viewport": { "width": 1280, "height": 900 },
+    "viewport": { "width": 1280, "height": 800 },
     "earned": [2, 3],
     "spoilers": true,
     "kind": "story",
     "selected": 4,
-    "listAnchor": 1
+    "listAnchor": 8
   }
 ]

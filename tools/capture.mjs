@@ -53,14 +53,20 @@ try {
       viewport: [innerWidth, innerHeight],
       pageOverflow: document.documentElement.scrollWidth > innerWidth,
       guide: (() => { const panel = document.querySelector('.guide-scroll'); return panel ? { client: panel.clientHeight, scroll: panel.scrollHeight } : null; })(),
+      sources: Array.from(document.querySelectorAll('.source-entry a')).map((link) => {
+        const rect = link.getBoundingClientRect();
+        return { text: link.textContent, href: link.href, visible: rect.top >= 0 && rect.bottom <= innerHeight, rect: [Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)] };
+      }),
       roadmap: (() => { const list = document.querySelector('.stage-trophy-list'); return list ? { client: list.clientHeight, scroll: list.scrollHeight, rows: list.children.length } : null; })(),
       checklistNames: Array.from(document.querySelectorAll('.trophy-name')).filter((name) => {
         const rect = name.getBoundingClientRect();
         return rect.bottom > 0 && rect.top < innerHeight;
       }).map((name) => ({ text: name.textContent, rect: [Math.round(name.getBoundingClientRect().x), Math.round(name.getBoundingClientRect().y), Math.round(name.getBoundingClientRect().width), Math.round(name.getBoundingClientRect().height)], clipped: name.scrollWidth > name.clientWidth }))
     })`);
+    if (!/^[A-Za-z0-9._-]{1,128}$/.test(shot.file) || !/\.(?:png|jpe?g)$/i.test(shot.file)) throw new Error(`Invalid capture path: ${shot.file}`);
+    if (shot.viewport.width !== 1280 || shot.viewport.height !== 800) throw new Error('Captures must be 1280x800 to match the judge cover frame.');
     const capture = await page.send('Page.captureScreenshot', {
-      format: 'jpeg', quality: 92, fromSurface: true, captureBeyondViewport: false,
+      format: 'jpeg', quality: 90, fromSurface: true, captureBeyondViewport: false,
     });
     const output = resolve(shotDirectory, shot.file);
     writeFileSync(output, Buffer.from(capture.data, 'base64'));

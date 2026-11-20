@@ -1,4 +1,7 @@
 out/
 node_modules/
 artifacts/
+coverage/
+*.log
+.DS_Store
 tools/browser-profile-*/

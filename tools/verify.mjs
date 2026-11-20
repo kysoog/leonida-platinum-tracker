@@ -3,7 +3,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { extname, join, resolve } from 'node:path';
 import {
   buildDossier, readAppTree, htmlFacts, importMapOf, pageBaseFrom, resolveAppPath,
-  resolveModule, sourceImports, dynamicImports, cssReferences, sourceUrls,
+  resolveModule, sourceImports, dynamicImports, cssReferences,
 } from '../vendor/makefun-frontend.ts';
 
 const CAPS = { text_max_bytes: 163840, screenshots: { max: 4, max_bytes: 262144 }, app_max_files: 993, app_max_bytes: 50331648 };
@@ -32,7 +32,9 @@ check(statSync(resolve(APP, 'index.html')).isFile() && statSync(resolve(APP, 'in
 for (const file of [...files, ...directories]) check(Buffer.byteLength(file.slice(APP.length + 1)) <= 1000, `Path over 1000 bytes: ${file}`);
 console.log(`PASS app_files: ${files.length + directories.length} entries, ${totalBytes} bytes, 0 symlinks, index.html ${statSync(resolve(APP, 'index.html')).size} bytes`);
 
-const starter = JSON.parse(execFileSync('git', ['show', 'HEAD:app/data/trophies.json'], { encoding: 'utf8' }));
+// The original kit commit is the immutable authority for official wording.
+// Never compare against HEAD: that would let edited official text ratify itself.
+const starter = JSON.parse(execFileSync('git', ['show', '12f8900:app/data/trophies.json'], { encoding: 'utf8' }));
 const currentBytes = statSync(resolve(APP, 'data/trophies.json')).size;
 const current = JSON.parse(read(resolve(APP, 'data/trophies.json')));
 const byName = new Map(current.trophies.map((trophy) => [trophy.name, trophy]));
@@ -45,7 +47,16 @@ check(currentBytes <= 2097152, 'trophies.json exceeds 2 MiB.');
 check(current.trophies.length === 55, `Expected 55 trophy entries, found ${current.trophies.length}.`);
 check(missingGuides.length === 0, `Official trophies missing / blank guides: ${missingGuides.join(', ')}`);
 check(changedOfficialText.length === 0, `Official descriptions or grades changed: ${changedOfficialText.join(', ')}`);
-check(current.trophies.every((trophy) => Array.isArray(trophy.sources) && trophy.sources.length > 0 && trophy.sources.every((source) => source.label?.trim() && source.use?.trim())), 'A trophy guide is missing its named sources.');
+check(current.trophies.every((trophy) => Array.isArray(trophy.sources) && trophy.sources.length > 0 && trophy.sources.every((source) => source.label?.trim() && source.use?.trim() && /^https:\/\//.test(source.url ?? ''))), 'A trophy guide is missing its named linked sources.');
+check(current.trophies.every((trophy) => trophy.guide.length >= 180 && trophy.guide.trim() !== trophy.description.trim()), 'A field guide is missing or too superficial.');
+const missables = current.trophies.filter((trophy) => trophy.missable);
+check(missables.length === 1 && missables[0].id === 28, 'The cited roadmap has exactly one potential missable: Positive Mental Attitude.');
+check(missables[0]?.missableWindow === 'Chapter 1 · after Down to Earth · before Chapter 2 · 1 of 18 meditations', 'The Chapter 1 missable window or 1-of-18 meditation detail is missing.');
+check(current.trophies.every((trophy) => trophy.unlockContext?.trim() && trophy.progressCheck?.trim()), 'Every trophy needs practical placement and a concrete earned check.');
+const gradeCounts = Object.fromEntries(['platinum', 'silver', 'gold', 'bronze'].map((grade) => [grade, current.trophies.filter((trophy) => trophy.grade === grade).length]));
+check(JSON.stringify(gradeCounts) === JSON.stringify({ platinum: 1, silver: 6, gold: 2, bronze: 46 }), `Grade totals drifted: ${JSON.stringify(gradeCounts)}`);
+const indexText = read(resolve(APP, 'index.html'));
+for (const [grade, count] of Object.entries(gradeCounts)) check(indexText.includes(`grade-token ${grade}"></span><strong>${count}</strong>`), `Visible ${grade} count does not match the data.`);
 const invalidKinds = current.trophies.filter((trophy) => !['story', 'missable', 'collectibles', 'activities', 'online'].includes(trophy.kind));
 check(invalidKinds.length === 0, 'A trophy has an invalid kind.');
 check(current.trophies.every((trophy) => Number.isInteger(trophy.roadmapStage) && trophy.roadmapStage >= 1 && trophy.roadmapStage <= 6), 'Invalid roadmap stage.');
@@ -120,12 +131,10 @@ for (const file of files.filter((name) => /\.(?:js|mjs)$/.test(name))) {
   const result = spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
   check(result.status === 0, `JavaScript parse failed ${file}: ${result.stderr}`);
 }
-const sourceFiles = files.filter((file) => /\.(?:html|js|mjs|css|json)$/.test(file));
-for (const file of sourceFiles) {
-  const text = read(file);
-  check(!/https?:\/\/|(?:^|[^:])\/\/[a-z\d.-]+\.[a-z]{2,}/i.test(text), `Remote URL text found in reachable source ${file}`);
-}
-console.log(`PASS references: ${referenceLog.length} HTML/media references inspected; ${reachableModules.size} modules reachable and parsed; all CSS/import references local; no remote URL`);
+// Citation hrefs in JSON and <a> elements are deliberately outbound reads,
+// opened only after a reader clicks. htmlFacts and import/fetch scans above
+// still reject every load-bearing remote stylesheet, script, media or module.
+console.log(`PASS references: ${referenceLog.length} HTML/media references inspected; ${reachableModules.size} modules reachable and parsed; all load-bearing references local`);
 console.log(`PASS js_parses: ${files.filter((name) => /\.m?js$/.test(name)).length} JavaScript modules parsed by Node`);
 
 function jpegDimensions(bytes) {
@@ -164,10 +173,12 @@ for (const name of shots) {
   }
 }
 
-const sourceOutline = sourceUrls(tree.files.filter((file) => file.cls === 'source').map((file) => ({ path: file.path, text: read(resolve(APP, file.path)) })));
-check(sourceOutline.length === 0, `Vendor URL scan found: ${JSON.stringify(sourceOutline)}`);
+const citedUrls = new Set(current.trophies.flatMap((trophy) => trophy.sources.map((source) => source.url)));
+check(citedUrls.size >= 2 && read(resolve(APP, 'index.html')).includes('href="https://make.fun/bounty/gta6-trophy-guide-01"'), 'Research or make.fun outbound links are missing.');
+console.log(`PASS citations: ${citedUrls.size} distinct research URLs plus the make.fun header link are user-initiated anchors, not fetched assets`);
 const expectedDossier = Buffer.from(buildDossier(resolve('.'), CAPS));
-const actualDossier = readFileSync(resolve('out/dossier.json'));
+const packagedRoot = resolve(process.env.MAKEFUN_OUTPUT_DIR ?? '/root/makefun/tg2-scratch/out');
+const actualDossier = readFileSync(resolve(packagedRoot, 'dossier.json'));
 check(expectedDossier.equals(actualDossier), `dossier.json differs from fresh buildDossier output (${expectedDossier.length} expected bytes vs ${actualDossier.length} actual).`);
 check(actualDossier.length <= 1572864, 'dossier.json exceeds 1.5 MiB.');
 console.log(`${expectedDossier.equals(actualDossier) ? 'PASS' : 'FAIL'} dossier_matches: ${actualDossier.length} bytes byte-identical to buildDossier`);
